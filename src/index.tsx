@@ -25,6 +25,10 @@ export function login(scope: string[]): Promise<number> {
   return OkLogin.login(scope);
 }
 
+export function request(method: string, params: any): Promise<number> {
+  return OkLogin.request(method, params);
+}
+
 export function logout(): Promise<number> {
   return OkLogin.logout();
 }

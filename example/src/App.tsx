@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { View, Text, TouchableOpacity } from 'react-native';
-import { initialize, login, logout } from 'react-native-ok-login';
+import { initialize, login, logout, request } from 'react-native-ok-login';
 
 export default function App() {
   React.useEffect(() => {
@@ -27,6 +27,15 @@ export default function App() {
         }}
       >
         <Text>logout</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          request('photos.getAlbums', { fields: 'album.aid,album.title' })
+            .then((result) => console.log('result 3333', result))
+            .catch((err) => console.log(1111, err));
+        }}
+      >
+        <Text>get photos</Text>
       </TouchableOpacity>
     </View>
   );

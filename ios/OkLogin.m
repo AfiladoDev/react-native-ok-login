@@ -10,10 +10,13 @@
 
 NSString *const E_LOGIN_ERROR = @"E_LOGIN_ERROR";
 NSString *const E_GET_USER_FAILED = @"E_GET_USER_FAILED";
+NSString *const E_REQUEST_FAILED = @"E_REQUEST_FAILED";
 
 @implementation OkLogin {
   RCTPromiseResolveBlock loginResolver;
   RCTPromiseRejectBlock loginRejector;
+  RCTPromiseResolveBlock requestResolver;
+  RCTPromiseRejectBlock requestRejector;
 }
 
 RCT_EXPORT_MODULE()
@@ -32,6 +35,18 @@ RCT_EXPORT_METHOD(initialize: (NSString *) appId withKey: (NSString *) appKey ) 
     return root;
   };
   [OKSDK initWithSettings: settings];
+}
+
+RCT_EXPORT_METHOD(request: (NSString *) method arguments:(NSDictionary *) params  resolver: (RCTPromiseResolveBlock) resolve rejecter: (RCTPromiseRejectBlock) reject) {
+    self->requestResolver = resolve;
+    self->requestRejector = reject;
+    [OKSDK invokeMethod:method arguments:params success:^(NSDictionary* data) {
+      DMLog(@"Successfully request");
+      self->requestResolver([self getResponse:data]);
+    } error:^(NSError *error) {
+      DMLog(@"Error in request: %@", [error localizedDescription]);
+      self->requestRejector(RCTErrorUnspecified, E_REQUEST_FAILED, RCTErrorWithMessage([error localizedDescription]));
+    }];
 }
 
 RCT_EXPORT_METHOD(login: (NSArray *) scope resolver: (RCTPromiseResolveBlock) resolve rejecter: (RCTPromiseRejectBlock) reject) {
